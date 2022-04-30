@@ -1,4 +1,3 @@
-# Constantes
 TESTE   = False
 
 # caracteres usados em operadores
@@ -61,15 +60,53 @@ def tokeniza(exp: str) -> list:
     A funçao ignora tuo que esta na exp apos o caractere
     COMENTARIO (= "#").
     """
-    valores = []
-    expressoes = exp.split()
-    for e in expressoes:
-        if e in OPERADORES:
-            valores.append([e, OPERADOR])
-        elif e in DIGITOS or e in FLOATS:
-            valores.append([e, NUMERO])
-        elif e in LETRAS:
-            valores.append([e, VARIAVEL])
-        elif e in ABRE_FECHA_PARENTESES:
-            valores.append([e, PARENTESES])
-    return valores
+    def splitter(string: str, counter=0):
+        if counter == len(BRANCOS):
+            return string
+        chars = string.split(BRANCOS[counter])
+        return splitter(''.join(chars), counter + 1)
+
+    def isin(string_a: str, string_b: str):
+        for a in string_a:
+            for b in string_b:
+                if a == b:
+                    return True
+        return False
+
+    def parser(string: str):
+        values = []
+        chars = ''
+
+        for char in string:
+            if (char in OPERADORES or char in ABRE_FECHA_PARENTESES) and char not in COMENTARIO:
+                if chars == '':
+                    values.append(char)
+                else:
+                    values.append(chars)
+                    values.append(char)
+                    chars = ''
+            elif char in COMENTARIO:
+                break
+            else:
+                chars += char
+
+        if chars != '':
+            values.append(chars)
+
+        return values
+
+    value = splitter(string=exp)
+    parsed = parser(value)
+
+    results = []
+    for char in parsed:
+        if char in OPERADORES:
+            results.append([char, OPERADOR])
+        elif char in ABRE_FECHA_PARENTESES:
+            results.append([char, PARENTESES])
+        elif isin(char, LETRAS):
+            results.append([char, VARIAVEL])
+        elif isin(char, FLOATS):
+            results.append([float(char), NUMERO])
+
+    return results
