@@ -7,17 +7,22 @@ def grafo(tokens: list):
             if tokens[right][0] == '(':
                 aux = right + 1
                 for y in tokens[aux:]:
-                    if tokens[aux][0] == ')':
+                    if y[0] == ')':
                         values[x[0]] = [tokens[left][0], tokens[aux+1][0]]
                         break
                     aux += 1
             elif tokens[left][0] == ')':
-                aux = left - 1
-                for y in tokens[:aux]:
-                    if tokens[aux][1] == 1:
-                        values[x[0]] = [tokens[aux][0], tokens[right][0]]
+                for y in tokens[:left - 1]:
+                    if y[1] == 1:
+                        values[x[0]] = [y[0], tokens[right][0]]
                         break
-                    aux -= 1
+            elif left == 0 and tokens[right][1] not in [1,4]:
+                aux = right + 1
+                for y in tokens[aux:]:
+                    if y[1] == 1:
+                        values[x[0]] = [tokens[left][0], y[0]]
+                        break
+                    aux += 1
             else:
                 values[x[0]] = [tokens[left][0], tokens[right][0]]
         left += 1
