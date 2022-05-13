@@ -1,3 +1,5 @@
+
+
 TESTE   = False
 
 # caracteres usados em operadores
@@ -18,11 +20,14 @@ LETRAS  = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 # abre e fecha parenteses
 ABRE_FECHA_PARENTESES = "()"
 
+DELIMITADORES = ':;'
+
 # categorias
 OPERADOR   = 1 # para operadores aritméticos e atribuição
 NUMERO     = 2 # para números: todos são considerados float
 VARIAVEL   = 3 # para variáveis
 PARENTESES = 4 # para '(' e ')
+DELIMITADOR = 5
 
 # Whitespace characters: space, newline, horizontal tab,
 # vertical tab, form feed, carriage return
@@ -78,7 +83,9 @@ def tokeniza(exp: str) -> list:
         chars = ''
 
         for char in string:
-            if (char in OPERADORES or char in ABRE_FECHA_PARENTESES) and char not in COMENTARIO:
+            assert isin(char, DELIMITADORES + OPERADORES + ABRE_FECHA_PARENTESES + COMENTARIO + FLOATS + LETRAS + (''.join(BRANCOS))), \
+                f"O caractere '{char}' não é esperado"
+            if (char in OPERADORES or char in DELIMITADORES or char in ABRE_FECHA_PARENTESES) and char not in COMENTARIO:
                 if chars == '':
                     values.append(char)
                 else:
@@ -102,6 +109,8 @@ def tokeniza(exp: str) -> list:
     for char in parsed:
         if char in OPERADORES:
             results.append([char, OPERADOR])
+        elif char in DELIMITADORES:
+            results.append([char, DELIMITADOR])
         elif char in ABRE_FECHA_PARENTESES:
             results.append([char, PARENTESES])
         elif isin(char, LETRAS):
